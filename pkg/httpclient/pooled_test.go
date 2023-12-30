@@ -75,8 +75,7 @@ func TestPooled_OnReq(t *testing.T) {
 
 	client, clientCancel := NewPool(context.Background(), cfg, func() *http.Client {
 		return &http.Client{Timeout: time.Minute}
-	},
-	)
+	})
 	defer clientCancel()
 
 	type Counter struct {
