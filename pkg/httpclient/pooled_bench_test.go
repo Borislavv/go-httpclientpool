@@ -2,8 +2,7 @@ package httpclient
 
 import (
 	"context"
-	"ddos/config"
-	httpclientconfig "ddos/internal/ddos/infrastructure/httpclient/config"
+	httpclientconfig "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -21,27 +20,21 @@ func BenchmarkPooled_Do(b *testing.B) {
 	}))
 	defer server.Close()
 
-	cfg := &config.Config{
-		URL: server.URL,
-		HttpClient: httpclientconfig.Config{
-			PoolInitSize: 10,
-			PoolMaxSize:  1024,
-		},
+	cfg := &httpclientconfig.Config{
+		PoolInitSize: 10,
+		PoolMaxSize:  1024,
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	client, cancelPool := NewPool(
-		ctx,
-		cfg.HttpClient,
-		func() *http.Client {
-			return &http.Client{Timeout: time.Minute}
-		},
+	client, cancelPool := NewPool(ctx, cfg, func() *http.Client {
+		return &http.Client{Timeout: time.Minute}
+	},
 	)
 	defer cancelPool()
 
-	req, err := http.NewRequest("GET", cfg.URL, nil)
+	req, err := http.NewRequest("GET", server.URL, nil)
 	if err != nil {
 		b.Fatal(err)
 	}
