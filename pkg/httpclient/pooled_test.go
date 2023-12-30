@@ -32,8 +32,7 @@ func TestPooled_Do(t *testing.T) {
 
 	client, clientCancel := NewPool(ctx, cfg, func() *http.Client {
 		return &http.Client{Timeout: time.Minute}
-	},
-	)
+	})
 	defer clientCancel()
 
 	req, err := http.NewRequest("GET", server.URL, nil)
