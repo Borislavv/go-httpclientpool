@@ -22,6 +22,6 @@
 ![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/a1ace6a0-565c-4cce-9e6d-bc0bbb5332e1)
 
 ### Performance
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/14d639ca-eee7-4534-ab13-89a348b58351)
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/610a7723-2cb4-4cb6-affd-86d8ba4b0bec)
 
 See also benchmark itself: github.com/Borislavv/go-httpclientpool/pkg/httpclient/pooled_bench_test.go
