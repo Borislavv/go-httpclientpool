@@ -4,25 +4,22 @@
 ## Http client pool with middlewares implementation for golang
 
 ### Pool interface:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/fa542d96-e334-44d5-a7d0-b1cf3f8a1abe)
-
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/691dc22d-0efd-400c-b8ad-dc06e9d553c5)
 
 ### Create a new instance of pool:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/20fee9c8-8411-4f3f-a9d2-4d047637e2fe)
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/fcc0a9b3-368f-4136-a407-a52add5616c7)
 
 ### Usage: 
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/59213b73-9a7f-4257-b39b-4b0957589075)
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/1a468057-31b1-458f-9117-6ec361cf23e4)
 
 ### Request middleware interface:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/a102b236-934d-4c1a-9e8c-4dd8647c8719)
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/2f432efc-aaf0-4efd-a67d-1a902e6afdf6)
 
 ### Response middleware interface:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/24689b78-fd85-4f1e-b033-4ed03b522114)
-
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/fc0559e8-5b82-44f8-b523-718ca9e5c7f8)
 
 ### Middleware usage:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/89a28268-79dd-41b9-a686-e84b0cf4e7ea)
-
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/a1ace6a0-565c-4cce-9e6d-bc0bbb5332e1)
 
 ### Performance
 ![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/14d639ca-eee7-4534-ab13-89a348b58351)
