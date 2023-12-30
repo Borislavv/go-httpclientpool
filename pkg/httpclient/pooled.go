@@ -2,8 +2,8 @@ package httpclient
 
 import (
 	"context"
-	config "ddos/internal/ddos/infrastructure/httpclient/config"
-	middleware "ddos/internal/ddos/infrastructure/httpclient/middleware"
+	config "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
+	middleware "github.com/Borislavv/go-httpclientpool/pkg/httpclient/middleware"
 	"net/http"
 )
 
