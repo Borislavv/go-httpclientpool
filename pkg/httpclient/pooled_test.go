@@ -2,12 +2,12 @@ package httpclient
 
 import (
 	"context"
-	"ddos/config"
-	reqmiddleware "ddos/internal/ddos/domain/service/sender/req/middleware"
-	httpclientconfig "ddos/internal/ddos/infrastructure/httpclient/config"
+	httpclientconfig "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
+	httpclientmiddleware "github.com/Borislavv/go-httpclientpool/pkg/httpclient/middleware"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -22,27 +22,21 @@ func TestPooled_Do(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := &config.Config{
-		URL: server.URL,
-		HttpClient: httpclientconfig.Config{
-			PoolInitSize: 10,
-			PoolMaxSize:  1024,
-		},
+	cfg := &httpclientconfig.Config{
+		PoolInitSize: 10,
+		PoolMaxSize:  1024,
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	client, clientCancel := NewPool(
-		ctx,
-		cfg.HttpClient,
-		func() *http.Client {
-			return &http.Client{Timeout: time.Minute}
-		},
+	client, clientCancel := NewPool(ctx, cfg, func() *http.Client {
+		return &http.Client{Timeout: time.Minute}
+	},
 	)
 	defer clientCancel()
 
-	req, err := http.NewRequest("GET", cfg.URL, nil)
+	req, err := http.NewRequest("GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,22 +64,19 @@ func TestPooled_OnReq(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := httpclientconfig.Config{
+	cfg := &httpclientconfig.Config{
 		PoolInitSize: 10,
 		PoolMaxSize:  1024,
-	},
+	}
 
-	req, err := http.NewRequest("GET", cfg.URL, nil)
+	req, err := http.NewRequest("GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	client, clientCancel := NewPool(
-		context.Background(),
-		cfg.HttpClient,
-		func() *http.Client {
-			return &http.Client{Timeout: time.Minute}
-		},
+	client, clientCancel := NewPool(context.Background(), cfg, func() *http.Client {
+		return &http.Client{Timeout: time.Minute}
+	},
 	)
 	defer clientCancel()
 
@@ -96,7 +87,17 @@ func TestPooled_OnReq(t *testing.T) {
 
 	client.
 		OnReq(
-			reqmiddleware.AddTimestamp,
+			func(next httpclientmiddleware.RequestModifier) httpclientmiddleware.RequestModifier {
+				return httpclientmiddleware.RequestModifierFunc(func(req *http.Request) (*http.Response, error) {
+					copyValues := req.URL.Query()
+					if copyValues.Has("timestamp") {
+						copyValues.Del("timestamp")
+					}
+					copyValues.Add("timestamp", strconv.Itoa(time.Now().Nanosecond()))
+					req.URL.RawQuery = copyValues.Encode()
+					return next.Do(req)
+				})
+			},
 		).
 		OnResp(
 			func(next httpclientmiddleware.ResponseHandler) httpclientmiddleware.ResponseHandler {
