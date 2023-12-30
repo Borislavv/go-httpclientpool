@@ -1,4 +1,4 @@
-package httpclientconfig
+package httpclient
 
 type Config struct {
 	PoolInitSize int `arg:"-c,env:HTTP_CLIENT_POOL_INIT_SIZE"   default:"32"`

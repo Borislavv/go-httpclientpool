@@ -2,8 +2,6 @@ package httpclient
 
 import (
 	"context"
-	httpclientconfig "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
-	httpclientmiddleware "github.com/Borislavv/go-httpclientpool/pkg/httpclient/middleware"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -22,7 +20,7 @@ func TestPooled_Do(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := &httpclientconfig.Config{
+	cfg := &Config{
 		PoolInitSize: 10,
 		PoolMaxSize:  1024,
 	}
@@ -63,14 +61,14 @@ func TestPooled_OnReq(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := &httpclientconfig.Config{
-		PoolInitSize: 10,
-		PoolMaxSize:  1024,
-	}
-
 	req, err := http.NewRequest("GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	cfg := &Config{
+		PoolInitSize: 10,
+		PoolMaxSize:  1024,
 	}
 
 	client, clientCancel := NewPool(context.Background(), cfg, func() *http.Client {
@@ -78,15 +76,16 @@ func TestPooled_OnReq(t *testing.T) {
 	})
 	defer clientCancel()
 
-	type Counter struct {
+	counter := &struct {
 		Responses int
+	}{
+		Responses: 0,
 	}
-	counter := &Counter{}
 
 	client.
 		OnReq(
-			func(next httpclientmiddleware.RequestModifier) httpclientmiddleware.RequestModifier {
-				return httpclientmiddleware.RequestModifierFunc(func(req *http.Request) (*http.Response, error) {
+			func(next RequestModifier) RequestModifier {
+				return RequestModifierFunc(func(req *http.Request) (*http.Response, error) {
 					copyValues := req.URL.Query()
 					if copyValues.Has("timestamp") {
 						copyValues.Del("timestamp")
@@ -98,14 +97,14 @@ func TestPooled_OnReq(t *testing.T) {
 			},
 		).
 		OnResp(
-			func(next httpclientmiddleware.ResponseHandler) httpclientmiddleware.ResponseHandler {
-				return httpclientmiddleware.ResponseHandlerFunc(func(resp *http.Response, err error) (*http.Response, error) {
+			func(next ResponseHandler) ResponseHandler {
+				return ResponseHandlerFunc(func(resp *http.Response, err error) (*http.Response, error) {
 					counter.Responses++
 					return next.Handle(resp, err)
 				})
 			},
-			func(next httpclientmiddleware.ResponseHandler) httpclientmiddleware.ResponseHandler {
-				return httpclientmiddleware.ResponseHandlerFunc(func(resp *http.Response, err error) (*http.Response, error) {
+			func(next ResponseHandler) ResponseHandler {
+				return ResponseHandlerFunc(func(resp *http.Response, err error) (*http.Response, error) {
 					counter.Responses++
 					return next.Handle(resp, err)
 				})

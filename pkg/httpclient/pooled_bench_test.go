@@ -2,7 +2,6 @@ package httpclient
 
 import (
 	"context"
-	httpclientconfig "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -20,7 +19,7 @@ func BenchmarkPooled_Do(b *testing.B) {
 	}))
 	defer server.Close()
 
-	cfg := &httpclientconfig.Config{
+	cfg := &Config{
 		PoolInitSize: 10,
 		PoolMaxSize:  1024,
 	}

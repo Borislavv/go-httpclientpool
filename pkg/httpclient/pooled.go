@@ -2,8 +2,6 @@ package httpclient
 
 import (
 	"context"
-	config "github.com/Borislavv/go-httpclientpool/pkg/httpclient/config"
-	middleware "github.com/Borislavv/go-httpclientpool/pkg/httpclient/middleware"
 	"net/http"
 )
 
@@ -14,11 +12,11 @@ type Pool struct {
 	pool    chan *http.Client
 	creator func() *http.Client
 	cancel  context.CancelFunc
-	req     middleware.RequestModifier
-	resp    middleware.ResponseHandler
+	req     RequestModifier
+	resp    ResponseHandler
 }
 
-func NewPool(ctx context.Context, cfg *config.Config, creator func() *http.Client) (*Pool, CancelFunc) {
+func NewPool(ctx context.Context, cfg *Config, creator func() *http.Client) (*Pool, CancelFunc) {
 	if cfg.PoolInitSize > cfg.PoolMaxSize {
 		cfg.PoolInitSize = cfg.PoolMaxSize
 	}
@@ -36,7 +34,7 @@ func NewPool(ctx context.Context, cfg *config.Config, creator func() *http.Clien
 		p.pool <- creator()
 	}
 
-	p.req = middleware.RequestModifierFunc(
+	p.req = RequestModifierFunc(
 		func(req *http.Request) (*http.Response, error) {
 			c := p.get()
 			defer p.put(c)
@@ -44,7 +42,7 @@ func NewPool(ctx context.Context, cfg *config.Config, creator func() *http.Clien
 		},
 	)
 
-	p.resp = middleware.ResponseHandlerFunc(
+	p.resp = ResponseHandlerFunc(
 		func(resp *http.Response, err error) (*http.Response, error) {
 			return resp, err
 		},
@@ -57,14 +55,14 @@ func (p *Pool) Do(req *http.Request) (*http.Response, error) {
 	return p.resp.Handle(p.req.Do(req.WithContext(p.ctx)))
 }
 
-func (p *Pool) OnReq(middlewares ...middleware.RequestMiddlewareFunc) Pooled {
+func (p *Pool) OnReq(middlewares ...RequestMiddlewareFunc) Pooled {
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		p.req = middlewares[i].Exec(p.req)
 	}
 	return p
 }
 
-func (p *Pool) OnResp(middlewares ...middleware.ResponseMiddlewareFunc) Pooled {
+func (p *Pool) OnResp(middlewares ...ResponseMiddlewareFunc) Pooled {
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		p.resp = middlewares[i].Exec(p.resp)
 	}
