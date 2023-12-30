@@ -30,8 +30,7 @@ func BenchmarkPooled_Do(b *testing.B) {
 
 	client, cancelPool := NewPool(ctx, cfg, func() *http.Client {
 		return &http.Client{Timeout: time.Minute}
-	},
-	)
+	})
 	defer cancelPool()
 
 	req, err := http.NewRequest("GET", server.URL, nil)
