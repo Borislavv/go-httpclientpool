@@ -131,6 +131,4 @@ func TestPooled_OnReq(t *testing.T) {
 	if counter.Responses != 4 {
 		t.Fatal("response middleware does not applied, counter is equals zero")
 	}
-
-	time.Sleep(time.Second)
 }
