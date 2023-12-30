@@ -8,8 +8,7 @@
 
 
 ### Create a new instance of pool:
-![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/b45bf68c-5ace-4669-adbf-9354da9ebe65)
-
+![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/20fee9c8-8411-4f3f-a9d2-4d047637e2fe)
 
 ### Usage: 
 ![image](https://github.com/Borislavv/go-httpclientpool/assets/50691459/59213b73-9a7f-4257-b39b-4b0957589075)
