@@ -88,5 +88,4 @@ func (p *Pool) put(c *http.Client) {
 func (p *Pool) cls() {
 	p.cancel()
 	close(p.pool)
-	p.pool = nil
 }
